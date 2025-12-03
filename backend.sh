@@ -10,8 +10,6 @@ Y="\e[33m"
 N="\e[0m"
 
 
-echo "please enter DB password: "
-read -s mysql_root_password
 
 VALIDATE(){
     if [ $1 -ne 0 ]
@@ -23,9 +21,6 @@ VALIDATE(){
     fi
 }
 
-# CHECK_ROOT(){
-    
-# }
 
 if [ $USERID -ne 0 ]
 then
@@ -34,7 +29,6 @@ then
 else
     echo "You are super user."
 fi
-# CHECK_ROOT
 
 dnf module disable nodejs -y &>>$LOG_FILE
 VALIDATE $? "Disabling default nodejs"
@@ -83,7 +77,7 @@ VALIDATE $? "Enabling backend"
 dnf install mysql -y &>>$LOG_FILE
 VALIDATE $? "Installing MySQL Client"
 
-mysql -h db.soumyadevops.space -uroot -p${mysql_root_password} < /app/schema/backend.sql &>>$LOG_FILE
+mysql -h db.soumyadevops.space -uroot -pExpenseApp@1 < /app/schema/backend.sql &>>$LOG_FILE
 VALIDATE $? "Schema loading"
 
 systemctl restart backend &>>$LOG_FILE
