@@ -10,7 +10,8 @@ G="\e[32m"
 Y="\e[33m"
 N="\e[0m"
 
-if [ $USERID -ne 0 ]; then
+if [ $USERID -ne 0 ]
+then
     echo "Please run this script with root access."
     exit 1
 else
@@ -18,8 +19,9 @@ else
 fi
 
 
-VALIDATE() {
-    if [ $1 -ne 0 ]; then 
+VALIDATE(){
+    if [ $1 -ne 0 ]
+    then 
         echo -e "$2...$R FAILURE $N"
         exit 1
     else
@@ -37,5 +39,15 @@ VALIDATE $? "Enabling MySQL Server"
 systemctl start mysqld &>>$LOGFILE
 VALIDATE $? "Starting MySQL Server"
 
-mysql_secure_installation --set-root-pass ExpenseApp@1 &>>$LOGFILE
-VALIDATE $? "Setting  mysql root password"
+# mysql_secure_installation --set-root-pass ExpenseApp@1 &>>$LOGFILE
+# VALIDATE $? "Setting  mysql root password"
+
+# Below code will be useful for idempotent nature
+mysql -h db.soumyadevops.space -uroot -pExpenseApp@1 -e 'show databases;' &>>$LOGFILE
+if [ $? -ne 0 ]
+then
+    mysql_secure_installation --set-root-pass ExpenseApp@1
+    VALIDATE $? "MySQL Root password Setup"
+else
+    echo -e "MySQL Root password is already setup...$Y SKIPPING $N"
+fi
