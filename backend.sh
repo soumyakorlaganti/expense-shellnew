@@ -48,6 +48,36 @@ else
     echo -e "Expense user already created...$Y SKIPPING $N"
 fi
 
-mkdir /app
+mkdir -p /app &>>$LOG_FILE
 VALIDATE $? "Creating app directory"
 
+curl -o /tmp/backend.zip https://expense-builds.s3.us-east-1.amazonaws.com/expense-backend-v2.zip &>>$LOG_FILE
+VALIDATE $? "Downloading backend code"
+
+cd /app
+unzip /tmp/backend.zip &>>$LOG_FILE
+VALIDATE $? "Extracted backend code"
+
+npm install &>>$LOG_FILE
+VALIDATE $? "Installing nodejs dependencies"
+
+cp /home/ec2-user/expense-shellnew/backend.service /etc/systemd/system/backend.service &>>$LOG_FILE
+VALIDATE $? "Copied backend service"
+
+systemctl daemon-reload &>>$LOG_FILE
+VALIDATE $? "Daemon reload"
+
+systemctl start backend &>>$LOG_FILE
+VALIDATE $? "Starting backend"
+
+systemctl enable backend &>>$LOG_FILE
+VALIDATE $? "Enabling backend"
+
+dnf install mysql -y &>>$LOG_FILE
+VALIDATE $? "Insttalling MySQL Client"
+
+mysql -h db.soumyadevops.space -uroot -p${mysql_root_password} < /app/schema/backend.sql &>>$LOG_FILE
+VALIDATE $? "Schema loading"
+
+systemctl restart backend &>>$LOG_FILE
+VALIDATE $? "Restarting Backend"
