@@ -74,7 +74,7 @@ systemctl enable backend &>>$LOG_FILE
 VALIDATE $? "Enabling backend"
 
 dnf install mysql -y &>>$LOG_FILE
-VALIDATE $? "Insttalling MySQL Client"
+VALIDATE $? "Installing MySQL Client"
 
 mysql -h db.soumyadevops.space -uroot -p${mysql_root_password} < /app/schema/backend.sql &>>$LOG_FILE
 VALIDATE $? "Schema loading"
