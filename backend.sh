@@ -9,6 +9,7 @@ G="\e[32m"
 Y="\e[33m"
 N="\e[0m"
 
+
 echo "please enter DB password: "
 read -s mysql_root_password
 
@@ -22,13 +23,17 @@ VALIDATE(){
     fi
 }
 
-if [ $USERID -ne 0 ]
-then
-    echo "Please run the script with root access."
-    exit 1
-else
-    echo "You are super user."
-fi
+CHECK_ROOT(){
+    if [ $USERID -ne 0 ]
+    then
+        echo "Please run the script with root access."
+        exit 1
+    else
+        echo "You are super user."
+    fi
+}
+
+CHECK_ROOT
 
 dnf module disable nodejs -y &>>$LOG_FILE
 VALIDATE $? "Disabling default nodejs"
